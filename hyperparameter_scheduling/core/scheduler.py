@@ -332,10 +332,18 @@ class AutoScheduler(BaseScheduler):
             optimizer.step()
             
             total_loss += loss.item()
-            pred = output.argmax(dim=1, keepdim=True)
-            correct += pred.eq(target.view_as(pred)).sum().item()
-            total += target.size(0)
             
+            # Handle both classification and regression
+            if len(output.shape) > 1 and output.shape[1] > 1:
+                # Classification task
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(target.view_as(pred)).sum().item()
+            else:
+                # Regression task - use MSE as accuracy proxy
+                mse = ((output.squeeze() - target) ** 2).mean().item()
+                correct += (1.0 / (1.0 + mse)) * target.size(0)  # Convert MSE to accuracy-like metric
+            
+            total += target.size(0)
             self.current_step += 1
         
         return total_loss / len(train_loader), correct / total
