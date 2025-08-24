@@ -8,8 +8,8 @@ import torch.nn as nn
 import numpy as np
 from unittest.mock import Mock, patch
 
-from hyperparameter_scheduling import AutoScheduler, ObjectiveType
-from hyperparameter_scheduling.core import TrainingState, ScheduleDecision
+from hyperparameter_scheduling import AutoScheduler
+from hyperparameter_scheduling.core import TrainingState, ScheduleDecision, ObjectiveType
 from hyperparameter_scheduling.dynamics import TrainingDynamicsAnalyzer
 from hyperparameter_scheduling.learners import MetaLearner
 from hyperparameter_scheduling.transfer import TransferLearner

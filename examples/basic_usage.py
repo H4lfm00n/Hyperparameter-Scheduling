@@ -12,7 +12,8 @@ from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 import matplotlib.pyplot as plt
 
-from hyperparameter_scheduling import AutoScheduler, ObjectiveType
+from hyperparameter_scheduling import AutoScheduler
+from hyperparameter_scheduling.core import ObjectiveType
 
 
 # Define a simple neural network

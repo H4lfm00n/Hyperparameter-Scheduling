@@ -15,7 +15,8 @@ from sklearn.datasets import make_classification, make_regression
 from sklearn.preprocessing import StandardScaler
 import time
 
-from hyperparameter_scheduling import AutoScheduler, ObjectiveType
+from hyperparameter_scheduling import AutoScheduler
+from hyperparameter_scheduling.core import ObjectiveType
 
 
 class FlexibleNet(nn.Module):

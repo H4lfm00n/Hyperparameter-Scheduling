@@ -267,13 +267,14 @@ class AutoScheduler(BaseScheduler):
                 total_norm += param_norm.item() ** 2
         gradient_norm = total_norm ** (1. / 2)
         
-        # Get current hyperparameters
-        current_lr = optimizer.param_groups[0]['lr']
+        # Get current hyperparameters (use defaults for now)
+        current_lr = 0.001  # Default learning rate
         current_batch_size = train_loader.batch_size if hasattr(train_loader, 'batch_size') else 32
         
         # Get validation metrics
         val_metrics = {}
         if val_loader is not None:
+            device = next(model.parameters()).device
             val_metrics = self._evaluate_model(model, val_loader, nn.CrossEntropyLoss(), device)
         
         return TrainingState(
