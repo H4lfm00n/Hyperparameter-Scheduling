@@ -44,15 +44,45 @@ class AutoScheduler(BaseScheduler):
             objectives: List of optimization objectives
             config: Configuration dictionary
         """
-        # Convert string objectives to ObjectiveType
+        from ..security.data_validation import validate_config_data, sanitize_input
+        
+        # Validate and sanitize inputs
+        if not isinstance(hyperparameters, list) or not hyperparameters:
+            raise ValueError("hyperparameters must be a non-empty list")
+        
+        if not isinstance(objectives, list) or not objectives:
+            raise ValueError("objectives must be a non-empty list")
+        
+        # Sanitize hyperparameter names
+        sanitized_hyperparameters = []
+        for param in hyperparameters:
+            if not isinstance(param, str):
+                raise ValueError(f"Hyperparameter name must be string, got {type(param)}")
+            sanitized_param = sanitize_input(param)
+            sanitized_hyperparameters.append(sanitized_param)
+        
+        # Convert string objectives to ObjectiveType and validate
         obj_types = []
         for obj in objectives:
             if isinstance(obj, str):
+                # Validate objective string
+                if obj not in [o.value for o in ObjectiveType]:
+                    raise ValueError(f"Invalid objective: {obj}")
                 obj_types.append(ObjectiveType(obj))
-            else:
+            elif isinstance(obj, ObjectiveType):
                 obj_types.append(obj)
+            else:
+                raise ValueError(f"Objective must be string or ObjectiveType, got {type(obj)}")
         
-        super().__init__(hyperparameters, obj_types, config)
+        # Validate and sanitize config
+        if config is not None:
+            if not isinstance(config, dict):
+                raise ValueError("config must be a dictionary")
+            config = validate_config_data(config)
+        else:
+            config = {}
+        
+        super().__init__(sanitized_hyperparameters, obj_types, config)
         
         # Initialize components
         self.dynamics_analyzer = TrainingDynamicsAnalyzer()
@@ -455,28 +485,62 @@ class AutoScheduler(BaseScheduler):
         return "; ".join(reasoning_parts)
     
     def save(self, path: str) -> None:
-        """Save the scheduler state."""
+        """Save the scheduler state securely."""
         import pickle
-        state = {
-            "meta_learner": self.meta_learner.get_state(),
-            "transfer_learner": self.transfer_learner.get_state(),
-            "history": self.history,
-            "schedule_history": self.schedule_history,
-            "best_performance": self.best_performance,
-            "config": self.config
-        }
-        with open(path, 'wb') as f:
-            pickle.dump(state, f)
+        from ..security.file_security import validate_file_path, SecurityError
+        from ..security.data_validation import validate_config_data
+        
+        try:
+            # Validate file path
+            validated_path = validate_file_path(path, allowed_extensions=['.pkl'])
+            
+            # Validate config before saving
+            validated_config = validate_config_data(self.config)
+            
+            state = {
+                "meta_learner": self.meta_learner.get_state(),
+                "transfer_learner": self.transfer_learner.get_state(),
+                "history": self.history,
+                "schedule_history": self.schedule_history,
+                "best_performance": self.best_performance,
+                "config": validated_config
+            }
+            
+            with open(validated_path, 'wb') as f:
+                pickle.dump(state, f)
+                
+        except SecurityError as e:
+            raise SecurityError(f"Failed to save scheduler state: {e}")
+        except Exception as e:
+            raise Exception(f"Failed to save scheduler state: {e}")
     
     def load(self, path: str) -> None:
-        """Load the scheduler state."""
+        """Load the scheduler state securely."""
         import pickle
-        with open(path, 'rb') as f:
-            state = pickle.load(f)
+        from ..security.file_security import validate_file_path, SecurityError
+        from ..security.data_validation import safe_pickle_load, DataValidationError
         
-        self.meta_learner.load_state(state["meta_learner"])
-        self.transfer_learner.load_state(state["transfer_learner"])
-        self.history = state["history"]
-        self.schedule_history = state["schedule_history"]
-        self.best_performance = state["best_performance"]
-        self.config.update(state["config"])
+        try:
+            # Validate file path
+            validated_path = validate_file_path(path, allowed_extensions=['.pkl'])
+            
+            # Expected keys in the state
+            expected_keys = {
+                "meta_learner", "transfer_learner", "history", 
+                "schedule_history", "best_performance", "config"
+            }
+            
+            # Safely load and validate data
+            state = safe_pickle_load(str(validated_path), expected_keys)
+            
+            self.meta_learner.load_state(state["meta_learner"])
+            self.transfer_learner.load_state(state["transfer_learner"])
+            self.history = state["history"]
+            self.schedule_history = state["schedule_history"]
+            self.best_performance = state["best_performance"]
+            self.config.update(state["config"])
+            
+        except (SecurityError, DataValidationError) as e:
+            raise SecurityError(f"Failed to load scheduler state: {e}")
+        except Exception as e:
+            raise Exception(f"Failed to load scheduler state: {e}")

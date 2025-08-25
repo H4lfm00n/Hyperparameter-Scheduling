@@ -327,22 +327,54 @@ class MetaLearner:
         self.config.update(state["config"])
     
     def save_models(self, path: str) -> None:
-        """Save trained models to disk."""
-        model_data = {
-            "models": self.models,
-            "scalers": self.scalers,
-            "feature_names": self.feature_names,
-            "config": self.config,
-        }
-        joblib.dump(model_data, path)
+        """Save trained models to disk securely."""
+        from ..security.file_security import validate_file_path, SecurityError
+        from ..security.data_validation import validate_config_data
+        
+        try:
+            # Validate file path
+            validated_path = validate_file_path(path, allowed_extensions=['.joblib', '.pkl'])
+            
+            # Validate config before saving
+            validated_config = validate_config_data(self.config)
+            
+            model_data = {
+                "models": self.models,
+                "scalers": self.scalers,
+                "feature_names": self.feature_names,
+                "config": validated_config,
+            }
+            joblib.dump(model_data, validated_path)
+            
+        except SecurityError as e:
+            raise SecurityError(f"Failed to save models: {e}")
+        except Exception as e:
+            raise Exception(f"Failed to save models: {e}")
     
     def load_models(self, path: str) -> None:
-        """Load trained models from disk."""
-        model_data = joblib.load(path)
-        self.models = model_data["models"]
-        self.scalers = model_data["scalers"]
-        self.feature_names = model_data["feature_names"]
-        self.config.update(model_data["config"])
+        """Load trained models from disk securely."""
+        from ..security.file_security import validate_file_path, SecurityError
+        from ..security.data_validation import safe_joblib_load, DataValidationError
+        
+        try:
+            # Validate file path
+            validated_path = validate_file_path(path, allowed_extensions=['.joblib', '.pkl'])
+            
+            # Expected keys in the model data
+            expected_keys = {"models", "scalers", "feature_names", "config"}
+            
+            # Safely load and validate data
+            model_data = safe_joblib_load(str(validated_path), expected_keys)
+            
+            self.models = model_data["models"]
+            self.scalers = model_data["scalers"]
+            self.feature_names = model_data["feature_names"]
+            self.config.update(model_data["config"])
+            
+        except (SecurityError, DataValidationError) as e:
+            raise SecurityError(f"Failed to load models: {e}")
+        except Exception as e:
+            raise Exception(f"Failed to load models: {e}")
     
     def get_feature_importance(self, param: str) -> Dict[str, float]:
         """Get feature importance for a specific hyperparameter."""

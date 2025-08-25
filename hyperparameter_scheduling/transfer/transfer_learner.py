@@ -396,24 +396,56 @@ class TransferLearner:
         self.config.update(state["config"])
     
     def save_database(self, path: str) -> None:
-        """Save the problem database to disk."""
-        database = {
-            "problem_signatures": self.problem_signatures,
-            "problem_clusters": self.problem_clusters,
-            "cluster_model": self.cluster_model,
-            "scaler": self.scaler,
-            "config": self.config,
-        }
-        joblib.dump(database, path)
+        """Save the problem database to disk securely."""
+        from ..security.file_security import validate_file_path, SecurityError
+        from ..security.data_validation import validate_config_data
+        
+        try:
+            # Validate file path
+            validated_path = validate_file_path(path, allowed_extensions=['.joblib', '.pkl'])
+            
+            # Validate config before saving
+            validated_config = validate_config_data(self.config)
+            
+            database = {
+                "problem_signatures": self.problem_signatures,
+                "problem_clusters": self.problem_clusters,
+                "cluster_model": self.cluster_model,
+                "scaler": self.scaler,
+                "config": validated_config,
+            }
+            joblib.dump(database, validated_path)
+            
+        except SecurityError as e:
+            raise SecurityError(f"Failed to save database: {e}")
+        except Exception as e:
+            raise Exception(f"Failed to save database: {e}")
     
     def load_database(self, path: str) -> None:
-        """Load the problem database from disk."""
-        database = joblib.load(path)
-        self.problem_signatures = database["problem_signatures"]
-        self.problem_clusters = database["problem_clusters"]
-        self.cluster_model = database["cluster_model"]
-        self.scaler = database["scaler"]
-        self.config.update(database["config"])
+        """Load the problem database from disk securely."""
+        from ..security.file_security import validate_file_path, SecurityError
+        from ..security.data_validation import safe_joblib_load, DataValidationError
+        
+        try:
+            # Validate file path
+            validated_path = validate_file_path(path, allowed_extensions=['.joblib', '.pkl'])
+            
+            # Expected keys in the database
+            expected_keys = {"problem_signatures", "problem_clusters", "cluster_model", "scaler", "config"}
+            
+            # Safely load and validate data
+            database = safe_joblib_load(str(validated_path), expected_keys)
+            
+            self.problem_signatures = database["problem_signatures"]
+            self.problem_clusters = database["problem_clusters"]
+            self.cluster_model = database["cluster_model"]
+            self.scaler = database["scaler"]
+            self.config.update(database["config"])
+            
+        except (SecurityError, DataValidationError) as e:
+            raise SecurityError(f"Failed to load database: {e}")
+        except Exception as e:
+            raise Exception(f"Failed to load database: {e}")
     
     def get_similarity_matrix(self) -> Dict[str, Dict[str, float]]:
         """Get similarity matrix between all problems."""
