@@ -60,7 +60,7 @@ Dynamic: summary
 
 A sophisticated library that learns optimal hyperparameter schedules (learning rate, batch size, regularization) based on training dynamics and generalizes across similar problems.
 
-## 🚀 Features
+## Features
 
 - **Dynamic Schedule Learning**: Automatically learns optimal hyperparameter schedules during training
 - **Cross-Problem Generalization**: Transfers learned schedules to similar problems
@@ -68,7 +68,7 @@ A sophisticated library that learns optimal hyperparameter schedules (learning r
 - **Real-time Adaptation**: Adjusts schedules based on training dynamics and performance metrics
 - **Extensible Framework**: Easy to integrate with any deep learning framework
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ├── core/                 # Core scheduling algorithms
@@ -81,13 +81,13 @@ A sophisticated library that learns optimal hyperparameter schedules (learning r
 └── tests/               # Test suite
 ```
 
-## 📦 Installation
+## Installation
 
 ```bash
 pip install -e .
 ```
 
-## 🎯 Quick Start
+## Quick Start
 
 ```python
 from hyperparameter_scheduling import AutoScheduler
@@ -108,7 +108,7 @@ scheduler.fit(
 )
 ```
 
-## 🔬 Key Components
+## Key Components
 
 ### 1. **Schedule Learning**
 - Meta-learning approaches for schedule optimization
@@ -130,14 +130,14 @@ scheduler.fit(
 - Trade-off analysis between objectives
 - Adaptive weight adjustment
 
-## 📚 Documentation
+## Documentation
 
 See the `examples/` directory for detailed usage examples and tutorials.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please read our contributing guidelines and submit pull requests.
 
-## 📄 License
+## License
 
 MIT License - see LICENSE file for details.

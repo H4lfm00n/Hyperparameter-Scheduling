@@ -58,14 +58,14 @@ def create_synthetic_data(num_samples=1000, input_size=784, num_classes=10):
 
 def main():
     """Main function demonstrating basic usage."""
-    print("🚀 Starting Automatic Hyperparameter Scheduling Demo")
+    print("Starting Automatic Hyperparameter Scheduling Demo")
     
     # Set random seed for reproducibility
     torch.manual_seed(42)
     np.random.seed(42)
     
     # Create synthetic data
-    print("📊 Creating synthetic dataset...")
+    print("Creating synthetic dataset...")
     X_train, y_train, X_val, y_val = create_synthetic_data()
     
     # Create data loaders
@@ -76,13 +76,13 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
     
     # Initialize model
-    print("🧠 Initializing neural network...")
+    print("Initializing neural network...")
     model = SimpleNet()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     
     # Initialize AutoScheduler
-    print("⚙️  Initializing AutoScheduler...")
+    print("Initializing AutoScheduler...")
     scheduler = AutoScheduler(
         hyperparameters=['learning_rate', 'batch_size', 'weight_decay'],
         objectives=[
@@ -113,7 +113,7 @@ def main():
     )
     
     # Train with automatic scheduling
-    print("🎯 Starting training with automatic hyperparameter scheduling...")
+    print("Starting training with automatic hyperparameter scheduling...")
     results = scheduler.fit(
         model=model,
         train_loader=train_loader,
@@ -122,12 +122,12 @@ def main():
     )
     
     # Print results
-    print("\n📈 Training completed!")
+    print("\nTraining completed!")
     print(f"Best performance: {results['best_performance']}")
     
     # Analyze schedule history
     schedule_history = results['schedule_history']
-    print(f"\n📊 Schedule decisions made: {len(schedule_history)}")
+    print(f"\nSchedule decisions made: {len(schedule_history)}")
     
     # Plot learning curves
     plot_learning_curves(results)
@@ -147,13 +147,13 @@ def main():
             val_total += target.size(0)
     
     final_accuracy = val_correct / val_total
-    print(f"\n🎯 Final validation accuracy: {final_accuracy:.4f}")
+    print(f"\nFinal validation accuracy: {final_accuracy:.4f}")
     
     # Save the scheduler state
-    print("\n💾 Saving scheduler state...")
+    print("\nSaving scheduler state...")
     scheduler.save("scheduler_state.pkl")
     
-    print("\n✅ Demo completed successfully!")
+    print("\nDemo completed successfully!")
 
 
 def plot_learning_curves(results):
@@ -208,7 +208,7 @@ def plot_learning_curves(results):
     plt.savefig('learning_curves.png', dpi=300, bbox_inches='tight')
     plt.show()
     
-    print("📊 Learning curves saved as 'learning_curves.png'")
+    print("Learning curves saved as 'learning_curves.png'")
 
 
 if __name__ == "__main__":

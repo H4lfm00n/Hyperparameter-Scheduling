@@ -125,7 +125,7 @@ def create_problem_data(problem_type, num_samples=1000, noise_level=0.1):
 
 def train_with_scheduler(scheduler, model, train_loader, val_loader, epochs=30, problem_name=""):
     """Train a model using the scheduler and return results."""
-    print(f"🎯 Training on {problem_name}...")
+    print(f"Training on {problem_name}...")
     
     start_time = time.time()
     results = scheduler.fit(
@@ -136,7 +136,7 @@ def train_with_scheduler(scheduler, model, train_loader, val_loader, epochs=30, 
     )
     training_time = time.time() - start_time
     
-    print(f"✅ Completed {problem_name} in {training_time:.2f}s")
+    print(f"Completed {problem_name} in {training_time:.2f}s")
     print(f"   Best performance: {results['best_performance']}")
     
     return results, training_time
@@ -144,7 +144,7 @@ def train_with_scheduler(scheduler, model, train_loader, val_loader, epochs=30, 
 
 def main():
     """Main function demonstrating transfer learning capabilities."""
-    print("🚀 Starting Transfer Learning Demo for Hyperparameter Scheduling")
+    print("Starting Transfer Learning Demo for Hyperparameter Scheduling")
     print("=" * 70)
     
     # Set random seed for reproducibility
@@ -160,7 +160,7 @@ def main():
     ]
     
     # Initialize scheduler with transfer learning capabilities
-    print("⚙️  Initializing AutoScheduler with transfer learning...")
+    print("Initializing AutoScheduler with transfer learning...")
     scheduler = AutoScheduler(
         hyperparameters=['learning_rate', 'batch_size', 'weight_decay'],
         objectives=[
@@ -247,12 +247,12 @@ def main():
         
         # Check if similar problems were found
         if transfer_stats['num_problems'] > 1:
-            print(f"   🎯 Found {transfer_stats['num_problems']} similar problems")
-            print(f"   📊 Average similarity: {transfer_stats['avg_similarity']:.3f}")
+            print(f"   Found {transfer_stats['num_problems']} similar problems")
+            print(f"   Average similarity: {transfer_stats['avg_similarity']:.3f}")
     
     # Analyze results
     print("\n" + "="*70)
-    print("📊 TRANSFER LEARNING ANALYSIS")
+    print("TRANSFER LEARNING ANALYSIS")
     print("="*70)
     
     # Compare performance across problems
@@ -289,10 +289,10 @@ def main():
     plot_transfer_learning_analysis(all_results, training_times)
     
     # Save scheduler state for future use
-    print("\n💾 Saving scheduler state...")
+    print("\nSaving scheduler state...")
     scheduler.save("transfer_learning_scheduler.pkl")
     
-    print("\n✅ Transfer learning demo completed successfully!")
+    print("\nTransfer learning demo completed successfully!")
 
 
 def plot_transfer_learning_analysis(all_results, training_times):
@@ -364,7 +364,7 @@ def plot_transfer_learning_analysis(all_results, training_times):
     plt.savefig('transfer_learning_analysis.png', dpi=300, bbox_inches='tight')
     plt.show()
     
-    print("📊 Transfer learning analysis saved as 'transfer_learning_analysis.png'")
+    print("Transfer learning analysis saved as 'transfer_learning_analysis.png'")
 
 
 if __name__ == "__main__":
