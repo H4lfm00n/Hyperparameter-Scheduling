@@ -12,6 +12,13 @@ from .learners.meta_learner import MetaLearner
 from .transfer.transfer_learner import TransferLearner
 from .optimizers.multi_objective import MultiObjectiveOptimizer
 
+# Import callbacks
+from .callbacks import (
+    GenericCallback,
+    PyTorchCallback,
+    TensorFlowCallback
+)
+
 __version__ = "0.1.0"
 __author__ = "Your Name"
 __email__ = "your.email@example.com"
@@ -23,4 +30,8 @@ __all__ = [
     "MetaLearner",
     "TransferLearner",
     "MultiObjectiveOptimizer",
+    # Callbacks
+    "GenericCallback",
+    "PyTorchCallback", 
+    "TensorFlowCallback",
 ]
