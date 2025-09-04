@@ -198,3 +198,5 @@ class GenericCallback(BaseCallback):
         
         # Update performance tracking
         self.current_performance.update(metrics)
+
+

@@ -264,3 +264,5 @@ class PyTorchCallback(BaseCallback):
                 'momentum': param_group.get('momentum', 0.0)
             }
         return state
+
+

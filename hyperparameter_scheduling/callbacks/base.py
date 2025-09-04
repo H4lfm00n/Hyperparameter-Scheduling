@@ -248,3 +248,5 @@ class BaseCallback(ABC):
             AutoScheduler instance
         """
         return self.scheduler
+
+

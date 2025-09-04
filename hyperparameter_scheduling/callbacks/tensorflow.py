@@ -272,3 +272,5 @@ class TensorFlowCallback(BaseCallback):
             state['beta_2'] = self.optimizer.beta_2.numpy()
         
         return state
+
+
