@@ -1,4 +1,4 @@
-Metadata-Version: 2.4
+Metadata-Version: 2.1
 Name: hyperparameter-scheduling
 Version: 0.1.0
 Summary: Automatic Hyperparameter Scheduling - Learn optimal hyperparameter schedules based on training dynamics
@@ -45,16 +45,6 @@ Provides-Extra: docs
 Requires-Dist: sphinx>=4.0.0; extra == "docs"
 Requires-Dist: sphinx-rtd-theme>=1.0.0; extra == "docs"
 Requires-Dist: nbsphinx>=0.8.0; extra == "docs"
-Dynamic: author
-Dynamic: author-email
-Dynamic: classifier
-Dynamic: description
-Dynamic: description-content-type
-Dynamic: home-page
-Dynamic: provides-extra
-Dynamic: requires-dist
-Dynamic: requires-python
-Dynamic: summary
 
 # Automatic Hyperparameter Scheduling
 

@@ -4,13 +4,21 @@ TensorFlow callback for hyperparameter scheduling.
 This callback is designed to work with TensorFlow/Keras training.
 """
 
-from typing import Dict, Any, Optional, List
-import tensorflow as tf
+from typing import Dict, Any, Optional, List, TYPE_CHECKING
 import time
 import psutil
 
+if TYPE_CHECKING:
+    import tensorflow as tf
+
 from .base import BaseCallback
 from ..core.base import TrainingState
+
+# Lazy import tensorflow - only import when actually needed
+def _get_tf():
+    """Lazy import tensorflow to avoid segfaults on macOS."""
+    import tensorflow as tf
+    return tf
 
 
 class TensorFlowCallback(BaseCallback):
@@ -28,8 +36,8 @@ class TensorFlowCallback(BaseCallback):
         config: Optional[Dict[str, Any]] = None,
         update_frequency: int = 1,
         log_level: str = "INFO",
-        model: Optional[tf.keras.Model] = None,
-        optimizer: Optional[tf.keras.optimizers.Optimizer] = None
+        model: Optional[Any] = None,  # tf.keras.Model
+        optimizer: Optional[Any] = None  # tf.keras.optimizers.Optimizer
     ):
         """
         Initialize the TensorFlow callback.
@@ -59,7 +67,7 @@ class TensorFlowCallback(BaseCallback):
         self.epoch_start_time = time.time()
         self.batch_start_time = time.time()
     
-    def set_model(self, model: tf.keras.Model) -> None:
+    def set_model(self, model: Any) -> None:  # tf.keras.Model
         """
         Set the TensorFlow model.
         
@@ -68,7 +76,7 @@ class TensorFlowCallback(BaseCallback):
         """
         self.model = model
     
-    def set_optimizer(self, optimizer: tf.keras.optimizers.Optimizer) -> None:
+    def set_optimizer(self, optimizer: Any) -> None:  # tf.keras.optimizers.Optimizer
         """
         Set the TensorFlow optimizer.
         
@@ -124,6 +132,7 @@ class TensorFlowCallback(BaseCallback):
         gradient_norm = 0.0
         if self.model is not None:
             try:
+                tf = _get_tf()
                 # Get gradients from the model
                 gradients = self.model.optimizer.get_gradients(
                     self.model.total_loss, self.model.trainable_weights
@@ -240,6 +249,7 @@ class TensorFlowCallback(BaseCallback):
             return 0.0
         
         try:
+            tf = _get_tf()
             # Get gradients from the model
             gradients = self.model.optimizer.get_gradients(
                 self.model.total_loss, self.model.trainable_weights

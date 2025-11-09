@@ -369,8 +369,23 @@ class TransferLearner:
         if n_clusters < 2:
             return
         
-        self.cluster_model = KMeans(n_clusters=n_clusters, random_state=42)
-        cluster_labels = self.cluster_model.fit_predict(feature_vectors_scaled)
+        # Use single thread to avoid segfault issues on macOS
+        import os
+        old_threads = os.environ.get('OMP_NUM_THREADS', None)
+        os.environ['OMP_NUM_THREADS'] = '1'
+        try:
+            self.cluster_model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+            cluster_labels = self.cluster_model.fit_predict(feature_vectors_scaled)
+        except Exception as e:
+            # Fallback: assign all problems to same cluster
+            import warnings
+            warnings.warn(f"Clustering failed: {e}. Assigning all problems to cluster 0.")
+            cluster_labels = np.zeros(len(feature_vectors), dtype=int)
+        finally:
+            if old_threads is not None:
+                os.environ['OMP_NUM_THREADS'] = old_threads
+            elif 'OMP_NUM_THREADS' in os.environ:
+                del os.environ['OMP_NUM_THREADS']
         
         # Store cluster assignments
         self.problem_clusters = {}

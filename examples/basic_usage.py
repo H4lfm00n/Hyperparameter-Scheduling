@@ -10,6 +10,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
 
 from hyperparameter_scheduling import AutoScheduler
@@ -206,7 +208,7 @@ def plot_learning_curves(results):
     
     plt.tight_layout()
     plt.savefig('learning_curves.png', dpi=300, bbox_inches='tight')
-    plt.show()
+    plt.close()  # Close the figure instead of showing to avoid display issues
     
     print("Learning curves saved as 'learning_curves.png'")
 
