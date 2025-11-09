@@ -2,7 +2,7 @@
 Transfer Learning Demo for Automatic Hyperparameter Scheduling.
 
 This example demonstrates how the library can learn from previous problems
-and transfer successful hyperparameter schedules to new, similar problems.
+and transfer successful schedules to new, similar problems.
 """
 
 import torch
